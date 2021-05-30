@@ -1,0 +1,28 @@
+version: '3.6'
+
+services:
+  api:
+    build: .
+    depends_on:
+      - db
+    environment:
+      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:admin@db/postgres_db
+    networks:
+      - default
+    ports:
+      - 5000:5000
+    volumes:
+      - ./:/usr/src/workspace
+    restart: always
+
+  db:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres_db
+    image: postgres:latest
+    networks:
+      - default
+    ports:
+      - 5432:5432
+    restart: always
