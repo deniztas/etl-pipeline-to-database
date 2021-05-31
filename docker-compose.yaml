@@ -6,7 +6,7 @@ services:
     depends_on:
       - db
     environment:
-      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:admin@db/postgres_db
+      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:admin@localhost:5432/postgres
     networks:
       - default
     ports:
@@ -19,7 +19,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
-      POSTGRES_DB: postgres_db
+      POSTGRES_DB: postgres
     image: postgres:latest
     networks:
       - default

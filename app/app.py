@@ -1,34 +1,17 @@
-from flask import Flask, Response
+from flask import Flask, Response, request
 from etl import steam_data
-from typing import Any
-import psycopg2
 import json
-#from sqlalchemy import create_engine
+from config import database_connection as db_conn, create_db
 
-
-def database_connection() -> Any:
-
-    # engine = create_engine('postgresql+psycopg2://postgres:admin@db/postgres')
-    # connection = engine.raw_connection()
-    # cursor = connection.cursor()
-    # return cursor
-    try:
-        connection = psycopg2.connect(
-            dbname="postgres",
-            user="postgres",
-            password="admin",
-            host="localhost",
-            port="5432"
-        )
-        connection.autocommit = True
-        cursor = connection.cursor()
-        return cursor
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.before_first_request
+def create_database():
+    create_db()
+    return Response("Database created", mimetype='text/plain')
+
+@app.route('/etl')
 def start_etl():
     app.logger.info('request started')
     steam_data.users_data_stream()
@@ -37,10 +20,11 @@ def start_etl():
     return Response("ETL complated", mimetype='text/plain')
 
 
-@app.route('/top_users/<loc>', methods=['GET'])
-def top_users(loc):
+@app.route('/top_users', methods=['GET'])
+def top_users():
 
-    cur = database_connection()
+    cur = db_conn()
+    loc = request.args['loc']
     create_table_query = \
     """SELECT u.userid FROM "Users" AS u \
     INNER JOIN (SELECT * FROM "Jobs" WHERE location = '{0}') AS j \

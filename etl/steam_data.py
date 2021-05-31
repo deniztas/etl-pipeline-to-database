@@ -2,6 +2,8 @@ import os
 import json
 from typing import Any
 import psycopg2
+from config import database_connection as db_conn
+
 
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -23,7 +25,7 @@ def database_connection() -> Any:
 
 def users_data_stream():
     
-    cur = database_connection()
+    cur = db_conn()
     create_table_query = \
     """CREATE TABLE IF NOT EXISTS "Users"(\
     "userid" bigint PRIMARY KEY NOT NULL, \
@@ -39,11 +41,11 @@ def users_data_stream():
                 """INSERT INTO "Users"("userid","location") VALUES ({0}, '{1}')""" \
                     .format(j_content["USERID"], j_content["LOCATION"])
             cur.execute(data_steam_query)
-    cur.close()
 
 def jobs_data_stream():
 
-    cur = database_connection()
+    cur = db_conn()
+    cur.execute("commit")
     create_table_query = \
     """CREATE TABLE IF NOT EXISTS "Jobs"(\
     "jobidentifier" bigint PRIMARY KEY NOT NULL, \
