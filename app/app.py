@@ -3,22 +3,21 @@ from etl import steam_data
 import json
 from config import database_connection as db_conn, create_db
 
+create_db()
 
 app = Flask(__name__)
 
-@app.before_first_request
+@app.route('/')
 def create_database():
-    create_db()
-    return Response("Database created", mimetype='text/plain')
+    return Response("To start ETL go to /etl", mimetype='text/plain')
 
 @app.route('/etl')
 def start_etl():
-    app.logger.info('request started')
-    steam_data.users_data_stream()
-    steam_data.jobs_data_stream()
-    app.logger.info('request finished')
-    return Response("ETL complated", mimetype='text/plain')
-
+        app.logger.info('request started')
+        steam_data.users_data_stream()
+        steam_data.jobs_data_stream()
+        app.logger.info('request finished')
+        return Response("ETL complated", mimetype='text/plain')
 
 @app.route('/top_users', methods=['GET'])
 def top_users():
@@ -37,4 +36,4 @@ def top_users():
     return resp
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

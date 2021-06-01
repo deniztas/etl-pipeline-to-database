@@ -1,27 +1,10 @@
 import os
 import json
-from typing import Any
-import psycopg2
 from config import database_connection as db_conn
 
 
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
-
-def database_connection() -> Any:
-    try:
-        connection = psycopg2.connect(
-            dbname="postgres",
-            user="postgres",
-            password="admin",
-            host="localhost",
-            port="5432"
-        )
-        connection.autocommit = True
-        cursor = connection.cursor()
-        return cursor
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
 
 def users_data_stream():
     
@@ -32,8 +15,8 @@ def users_data_stream():
     "location" VARCHAR(100) NOT NULL)"""
     cur.execute(create_table_query)
      
-    # path = os.path.join(__location__, "etl", "raw_data", "users.ndjson")
-    path = r"D:\Projects\etl-pipeline-to-database\etl\raw_data\users.ndjson"
+    path = os.path.join(__location__, "raw_data", "users.ndjson")
+
     with open(path) as f:
         for line in f:
             j_content = json.loads(line)
@@ -58,8 +41,8 @@ def jobs_data_stream():
     """
     cur.execute(create_table_query)
 
-    # path = os.path.join(__location__, "etl", "raw_data", "jobs.ndjson")
-    path = r"D:\Projects\etl-pipeline-to-database\etl\raw_data\jobs.ndjson"
+    path = os.path.join(__location__, "raw_data", "jobs.ndjson")
+
     with open(path) as f:
         for line in f:
             j_content = json.loads(line)

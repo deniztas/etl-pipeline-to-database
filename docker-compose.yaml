@@ -6,23 +6,18 @@ services:
     depends_on:
       - db
     environment:
-      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:admin@localhost:5432/postgres
-    networks:
-      - default
+      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:admin@db:5432/postgres
     ports:
       - 5000:5000
     volumes:
       - ./:/usr/src/workspace
     restart: always
-
   db:
+    image: postgres:13.3-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: postgres
-    image: postgres:latest
-    networks:
-      - default
     ports:
       - 5432:5432
     restart: always
