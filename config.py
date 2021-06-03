@@ -8,15 +8,18 @@ db_url = os.environ["SQLALCHEMY_DATABASE_URI"]
 db_name = db_url.split("/")[-1]
 __engine__ = create_engine(db_url)
 
+
 def create_db():
     """Create database if it does not exist"""
 
     cursor = get_db_connection()
     cursor.execute("commit")
-    cursor.execute("SELECT 1 FROM pg_catalog.pg_database WHERE datname = '{}'".format(db_name))
+    cursor.execute("SELECT 1 FROM pg_catalog.pg_database \
+        WHERE datname = '{}'".format(db_name))
     exists = cursor.fetchone()
     if not exists:
         cursor.execute('CREATE DATABASE {}'.format(db_name))
+
 
 def get_db_connection() -> Any:
     """Return database connection"""

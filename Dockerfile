@@ -1,10 +1,7 @@
-# pull official base image
 FROM python:3.8.0-alpine
 
-# set work directory
 WORKDIR /usr/src/workspace
 
-# copy project
 COPY . /usr/src/workspace/
 
 # set environment variables

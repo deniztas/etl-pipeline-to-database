@@ -6,17 +6,17 @@ from config import get_db_connection as db_conn
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
+
 def insert_users():
     """Create Users table if it does not exist
     and fill the table with data"""
 
     cur = db_conn()
-    create_table_query = \
-    """CREATE TABLE IF NOT EXISTS "Users"(\
+    create_table_query = """CREATE TABLE IF NOT EXISTS "Users"(\
     "userid" bigint PRIMARY KEY NOT NULL, \
     "location" VARCHAR(100) NOT NULL)"""
     cur.execute(create_table_query)
-     
+
     path = os.path.join(__location__, "raw_data", "users.ndjson")
 
     with open(path) as f:
@@ -29,14 +29,14 @@ def insert_users():
             cur.execute(data_steam_query)
     cur.close()
 
+
 def insert_jobs():
     """Create Jobs table if it does not exist
     and fill the table with data"""
 
     cur = db_conn()
     cur.execute("commit")
-    create_table_query = \
-    """CREATE TABLE IF NOT EXISTS "Jobs"(\
+    create_table_query = """CREATE TABLE IF NOT EXISTS "Jobs"(\
     "jobidentifier" bigint PRIMARY KEY NOT NULL, \
     "servicename" VARCHAR(100) NOT NULL, \
     "userid" bigint NOT NULL, \
@@ -54,14 +54,17 @@ def insert_jobs():
             j_content = json.loads(line)
             data_steam_query = \
                 """INSERT INTO "Jobs" \
-                ("jobidentifier","servicename", "userid", "location", "jobstatus", "revenue") \
+                ("jobidentifier","servicename", "userid", \
+                    "location", "jobstatus", "revenue") \
                 VALUES ({0}, '{1}', {2}, '{3}', '{4}', {5}) \
                 ON CONFLICT (jobidentifier) DO NOTHING""" \
-                    .format(j_content["JOBIDENTIFIER"], j_content["SERVICENAME"],
-                            j_content["USERID"], j_content["LOCATION"],
-                            j_content["JOBSTATUS"], j_content["REVENUE"])
+                    .format(
+                        j_content["JOBIDENTIFIER"], j_content["SERVICENAME"],
+                        j_content["USERID"], j_content["LOCATION"],
+                        j_content["JOBSTATUS"], j_content["REVENUE"])
             cur.execute(data_steam_query)
     cur.close()
+
 
 def start_etl():
     """Execute etl functions"""
