@@ -21,5 +21,5 @@
 + When ETL starts, firstly Users table created if it doesn't exist and loaded.
 + After Users table complated, loading of the Jobs table begins. Because UserId set as foreign key.
 
-5. **After ETL complated you will see the ETL complated response**
-6. **There is a http endpoint that get a loc parameter and return top 5 user.For instance, if your loc parameter is** LOC_1886 **and when you go to to** (http://127.0.0.1:5000/top_users?loc=LOC_1886) **url, http endpoint return will be** [98770174388, 98770178990, 98770149866, 98770178955, 98770176093]
+5. **After ETL complated you will see the a dropdown menu includes all user's locations**
+6. **There is a http endpoint that get a loc parameter and return top 5 user.For instance, if you select** *LOC_1886* **from dropdown menu you will redirected to** (http://127.0.0.1:5000/top_users?loc=LOC_1886) **url, http endpoint returns** [98770174388, 98770178990, 98770149866, 98770178955, 98770176093] **list**
