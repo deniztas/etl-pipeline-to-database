@@ -9,8 +9,6 @@ services:
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postgres:admin@db:5432/postgres
     ports:
       - 5000:5000
-    volumes:
-      - ./:/usr/src/workspace
     restart: always
   db:
     image: postgres:13.3-alpine
