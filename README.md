@@ -1,5 +1,5 @@
 # etl-pipeline-to-database
-## About Project
+## About the Project
 A mini-ETL (Extract Transform Load) pipeline that will move the Users and Jobs json files into a queryable PostgreSQL database. An HTTP endpoint that will require a job location as input, query the SQL database in step 1, and will return up to 5 User Ids as output.
 
 ## Getting Started
@@ -12,11 +12,17 @@ A mini-ETL (Extract Transform Load) pipeline that will move the Users and Jobs j
 
 ### Instructions
 1. To build the application image execute this in the root directory of the project:
-   ```$ docker-compose build```
+   ```
+   $ docker-compose build
+   ```
 3. Run the application besides database with:
-    ```$ docker-compose up```
+    ```
+    $ docker-compose up
+    ```
 4.  You can reach the api from:
-    ```http://localhost:5000/```
+    ```
+    http://localhost:5000/
+    ```
 
 ## How it works
 
