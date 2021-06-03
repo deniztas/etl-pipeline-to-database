@@ -1,29 +1,27 @@
 from flask import Flask, Response, request
 from etl import steam_data
 import json
-from config import database_connection as db_conn, create_db
+from config import get_db_connection as db_conn, create_db
 
 create_db()
+steam_data.start_etl()
 
 app = Flask(__name__)
 
 @app.route('/')
-def create_database():
-    return Response("To start ETL go to /etl", mimetype='text/plain')
-
-@app.route('/etl')
-def start_etl():
-        app.logger.info('request started')
-        steam_data.users_data_stream()
-        steam_data.jobs_data_stream()
-        app.logger.info('request finished')
-        return Response("ETL complated", mimetype='text/plain')
+def home_page():
+    return Response("ETL complated", mimetype='text/plain')
 
 @app.route('/top_users', methods=['GET'])
 def top_users():
 
-    cur = db_conn()
     loc = request.args['loc']
+    top_users = get_top_users(loc)
+    resp = Response(json.dumps(top_users))
+    return resp
+
+def get_top_users(loc):
+    cur = db_conn()
     create_table_query = \
     """SELECT u.userid FROM "Users" AS u \
     INNER JOIN (SELECT * FROM "Jobs" WHERE location = '{0}') AS j \
@@ -31,9 +29,7 @@ def top_users():
     ORDER BY REVENUE DESC \
     LIMIT 5""".format(loc)
     cur.execute(create_table_query)
-    top_users = cur.fetchall()
-    resp = Response(json.dumps(top_users))
-    return resp
+    return cur.fetchall()
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
