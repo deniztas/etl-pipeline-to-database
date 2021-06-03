@@ -1,12 +1,12 @@
 import os
 import json
-from config import database_connection as db_conn
+from config import get_db_connection as db_conn
 
 
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-def users_data_stream():
+def insert_users():
     
     cur = db_conn()
     create_table_query = \
@@ -21,11 +21,13 @@ def users_data_stream():
         for line in f:
             j_content = json.loads(line)
             data_steam_query = \
-                """INSERT INTO "Users"("userid","location") VALUES ({0}, '{1}')""" \
+                """INSERT INTO "Users"("userid","location") VALUES ({0}, '{1}') \
+                ON CONFLICT (userid) DO NOTHING""" \
                     .format(j_content["USERID"], j_content["LOCATION"])
             cur.execute(data_steam_query)
+    cur.close()
 
-def jobs_data_stream():
+def insert_jobs():
 
     cur = db_conn()
     cur.execute("commit")
@@ -49,13 +51,14 @@ def jobs_data_stream():
             data_steam_query = \
                 """INSERT INTO "Jobs" \
                 ("jobidentifier","servicename", "userid", "location", "jobstatus", "revenue") \
-                VALUES ({0}, '{1}', {2}, '{3}', '{4}', {5})""" \
+                VALUES ({0}, '{1}', {2}, '{3}', '{4}', {5}) \
+                ON CONFLICT (jobidentifier) DO NOTHING""" \
                     .format(j_content["JOBIDENTIFIER"], j_content["SERVICENAME"],
                             j_content["USERID"], j_content["LOCATION"],
                             j_content["JOBSTATUS"], j_content["REVENUE"])
             cur.execute(data_steam_query)
     cur.close()
 
-if __name__ == "__main__":
-    users_data_stream()
-    jobs_data_stream()
+def start_etl():
+    insert_users()
+    insert_jobs()
