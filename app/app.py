@@ -1,4 +1,4 @@
-from flask import Flask, Response, request
+from flask import Flask, Response, request, render_template
 from etl import steam_data
 import json
 from config import get_db_connection as db_conn, create_db
@@ -6,11 +6,22 @@ from config import get_db_connection as db_conn, create_db
 create_db()
 steam_data.start_etl()
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='template')
 
 @app.route('/')
-def home_page():
-    return Response("ETL complated", mimetype='text/plain')
+def index():
+    #create a cursor
+    cur = db_conn()
+    #execute select statement to fetch data to be displayed in combo/dropdown
+    distinct_loc_query = """\
+        SELECT DISTINCT location FROM "Users" \
+        ORDER BY location
+    """
+    cur.execute(distinct_loc_query) 
+    #fetch all rows ans store as a set of tuples 
+    location_list = cur.fetchall() 
+    #render template and send the set of tuples to the HTML file for displaying
+    return render_template("index.html",location_list=location_list) 
 
 @app.route('/top_users', methods=['GET'])
 def top_users():

@@ -1,0 +1,8 @@
+<form name="Item_1" action="{{ url_for('top_users') }}" method='GET'>
+    Choose Job Location: <SELECT name="loc" style="font-family:verdana">
+        {% for j in location_list %}
+            <OPTION value={{j[0]}}>{{j[0]}}</OPTION>
+        {% endfor %}
+        </SELECT>
+    <button type="submit">Select</button>
+</form>
