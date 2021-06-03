@@ -7,7 +7,9 @@ __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 def insert_users():
-    
+    """Create Users table if it does not exist
+    and fill the table with data"""
+
     cur = db_conn()
     create_table_query = \
     """CREATE TABLE IF NOT EXISTS "Users"(\
@@ -28,6 +30,8 @@ def insert_users():
     cur.close()
 
 def insert_jobs():
+    """Create Jobs table if it does not exist
+    and fill the table with data"""
 
     cur = db_conn()
     cur.execute("commit")
@@ -60,5 +64,7 @@ def insert_jobs():
     cur.close()
 
 def start_etl():
+    """Execute etl functions"""
+
     insert_users()
     insert_jobs()

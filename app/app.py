@@ -3,6 +3,8 @@ from etl import steam_data
 import json
 from config import get_db_connection as db_conn, create_db
 
+
+# Create db and etl before api started
 create_db()
 steam_data.start_etl()
 
@@ -10,21 +12,23 @@ app = Flask(__name__, template_folder='template')
 
 @app.route('/')
 def index():
+    """Home page"""
+
     #create a cursor
     cur = db_conn()
-    #execute select statement to fetch data to be displayed in combo/dropdown
+    #execute select statement to fetch data to be displayed in dropdown
     distinct_loc_query = """\
         SELECT DISTINCT location FROM "Users" \
         ORDER BY location
     """
     cur.execute(distinct_loc_query) 
-    #fetch all rows ans store as a set of tuples 
     location_list = cur.fetchall() 
-    #render template and send the set of tuples to the HTML file for displaying
     return render_template("index.html",location_list=location_list) 
 
 @app.route('/top_users', methods=['GET'])
 def top_users():
+    """Api that get top 5 users according
+    to selected location"""
 
     loc = request.args['loc']
     top_users = get_top_users(loc)
@@ -32,11 +36,14 @@ def top_users():
     return resp
 
 def get_top_users(loc):
+    """Execute postgres query and return top 5 userid"""
+
     cur = db_conn()
     create_table_query = \
     """SELECT u.userid FROM "Users" AS u \
     INNER JOIN (SELECT * FROM "Jobs" WHERE location = '{0}') AS j \
     ON u.userid = j.userid AND u.location != j.location \
+    WHERE revenue > 0 \
     ORDER BY REVENUE DESC \
     LIMIT 5""".format(loc)
     cur.execute(create_table_query)
